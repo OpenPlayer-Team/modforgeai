@@ -1,0 +1,64 @@
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build
+bin/
+obj/
+
+# MSBuild
+*.sln
+*.csproj
+*.userprefs
+
+# Output
+Debug/
+Release/
+deploy/
+
+# Cache
+/.vs/
+*.VC.db
+*.VC.opendb
+
+# Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# Test results
+*.TestResults.xml
+*.coverage
+
+# NuGet
+*.nupkg
+packages/
+*.nuget/
+
+# WinUI
+Generated/
+AppPackages/
+BundleArtifacts/
+*.appx
+*.appxbundle
+*.msix
+*.msixbundle
+
+# Local history
+.history/
+
+# Temp
+*.tmp
+*.temp
+*.log

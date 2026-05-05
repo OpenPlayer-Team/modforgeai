@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "WinUIMvvmApp": {
+      "commandName": "Project",
+      "nativeDebug": false,
+      "windowsTargetVersion": "Windows10_19041"
+    }
+  }
+}

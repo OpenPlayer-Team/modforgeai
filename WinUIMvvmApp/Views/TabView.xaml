@@ -1,0 +1,198 @@
+<Page x:Class="WinUIMvvmApp.Views.TabView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:vm="using:WinUIMvvmApp.ViewModels"
+      xmlns:m="using:WinUIMvvmApp.Models"
+      xmlns:converters="using:WinUIMvvmApp"
+      mc:Ignorable="d"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+      d:DataContext="{d:DesignInstance Type=vm:TabViewModel, IsDesignTimeCreatable=True}">
+
+    <Page.Resources>
+        <!-- Converter per visibilità da intero (zero) -->
+        <converters:IntToVisibilityConverter x:Key="IntToVisibilityConverter" />
+        
+        <!-- Converter per formattazione dimensioni -->
+        <converters:BytesToStringConverter x:Key="BytesToStringConverter" />
+        
+        <!-- Converter per data -->
+        <converters:DateTimeToStringConverter x:Key="DateTimeToStringConverter" />
+        
+        <!-- Converter per visibilità inversa -->
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        
+        <!-- Converter per peso font -->
+        <converters:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter" />
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Barra degli indirizzi -->
+        <Grid Grid.Row="0" Margin="8" ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Pulsante Indietro -->
+            <Button Grid.Column="0"
+                    Command="{x:Bind ViewModel.GoBackCommand, Mode=OneWay}"
+                    IsEnabled="{x:Bind ViewModel.CanGoBack, Mode=OneWay}"
+                    ToolTipService.ToolTip="Torna alla cartella precedente"
+                    Width="32" Height="32"
+                    Padding="0">
+                <SymbolIcon Symbol="Back" />
+            </Button>
+
+            <!-- Pulsante Su -->
+            <Button Grid.Column="1" Width="32" Height="32" Padding="0"
+                    Command="{x:Bind ViewModel.NavigateUpCommand, Mode=OneWay}"
+                    ToolTipService.ToolTip="Vai alla cartella superiore">
+                <SymbolIcon Symbol="Up" />
+            </Button>
+
+            <!-- Percorso corrente -->
+            <TextBox Grid.Column="2"
+                     Text="{x:Bind ViewModel.CurrentPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     PlaceholderText="Percorso..."
+                     MinWidth="300"
+                     VerticalAlignment="Center" />
+
+            <!-- Pulsante Vai -->
+            <Button Grid.Column="3"
+                    Content="Vai"
+                    Command="{x:Bind ViewModel.NavigateToPathCommand, Mode=OneWay}"
+                    CommandParameter="{x:Bind ViewModel.CurrentPath, Mode=OneWay}"
+                    ToolTipService.ToolTip="Vai al percorso specificato"
+                    Padding="12,4" />
+
+            <!-- Pulsante Aggiorna -->
+            <Button Grid.Column="4"
+                    Command="{x:Bind ViewModel.RefreshCommand, Mode=OneWay}"
+                    ToolTipService.ToolTip="Aggiorna elenco"
+                    Width="32" Height="32"
+                    Padding="0">
+                <SymbolIcon Symbol="Refresh" />
+            </Button>
+        </Grid>
+
+        <!-- Barra di stato -->
+        <Border Grid.Row="1"
+                Background="{ThemeResource SystemControlBackgroundAltMediumLowBrush}"
+                Padding="8,4"
+                Margin="0,0,0,4">
+            <StackPanel Orientation="Horizontal" Spacing="16">
+                <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                           VerticalAlignment="Center" />
+                <ProgressRing IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+                              Width="16" Height="16"
+                              VerticalAlignment="Center" />
+                <TextBlock Text="{x:Bind ViewModel.Items.Count, Mode=OneWay, StringFormat='{}Elementi: {0}'}"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <!-- Lista file e cartelle con virtualizzazione -->
+        <ListView Grid.Row="2"
+                  ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
+                  SelectedItem="{x:Bind SelectedItem, Mode=TwoWay}"
+                  IsItemClickEnabled="True"
+                  ItemClick="ListView_ItemClick"
+                  SelectionMode="Single">
+            
+            <!-- Abilita virtualizzazione per performance -->
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel VirtualizingStackPanel.VirtualizationMode="Recycling"
+                                     Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            
+            <!-- Cache per migliorare performance -->
+            <ListView.ItemContainerTransitions>
+                <TransitionCollection>
+                    <AddDeleteThemeTransition />
+                </TransitionCollection>
+            </ListView.ItemContainerTransitions>
+
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="m:FileItem">
+                    <Grid Padding="4" ColumnSpacing="12" Height="32">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="120" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Icona -->
+                        <TextBlock Grid.Column="0"
+                                   Text="{x:Bind Icon}"
+                                   FontSize="16"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Width="24" />
+
+                        <!-- Nome -->
+                        <TextBlock Grid.Column="1"
+                                   Text="{x:Bind Name}"
+                                   VerticalAlignment="Center"
+                                   FontWeight="{x:Bind IsDirectory, Converter={StaticResource BoolToFontWeightConverter}}"
+                                   TextTrimming="CharacterEllipsis" />
+
+                        <!-- Dimensione (solo file) -->
+                        <TextBlock Grid.Column="2"
+                                   Text="{x:Bind Size, Converter={StaticResource BytesToStringConverter}}"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   Width="100"
+                                   Visibility="{x:Bind IsDirectory, Converter={StaticResource InverseBoolConverter}}" />
+
+                        <!-- Data modifica -->
+                        <TextBlock Grid.Column="3"
+                                   Text="{x:Bind LastModified, Converter={StaticResource DateTimeToStringConverter}}"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   FontSize="11"
+                                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <!-- Overlay di caricamento -->
+        <Grid Grid.Row="2"
+              Background="#80000000"
+              IsVisible="{x:Bind ViewModel.IsLoading, Mode=OneWay}">
+            <ProgressRing IsActive="True"
+                          Width="48" Height="48"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- Barra di stato inferiore -->
+        <Border Grid.Row="3"
+                Background="{ThemeResource SystemControlBackgroundAltLowBrush}"
+                Padding="8,4">
+            <StackPanel Orientation="Horizontal" Spacing="16">
+                <TextBlock Text="{x:Bind ViewModel.CurrentPath, Mode=OneWay}"
+                           VerticalAlignment="Center"
+                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
+                <TextBlock Text="{x:Bind ViewModel.IsSplitMode, Mode=OneWay, Converter={StaticResource SyncStatusConverter}}"
+                           VerticalAlignment="Center"
+                           FontSize="11" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>

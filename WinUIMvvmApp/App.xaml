@@ -1,0 +1,29 @@
+<Application
+    x:Class="WinUIMvvmApp.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUIMvvmApp">
+    
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Converter per dimensione file -->
+            <local:BytesToStringConverter x:Key="BytesToStringConverter" />
+            
+            <!-- Converter per data/ora -->
+            <local:DateTimeToStringConverter x:Key="DateTimeToStringConverter" />
+            
+            <!-- Converter per visibilità da intero -->
+            <local:IntToVisibilityConverter x:Key="IntToVisibilityConverter" />
+            
+            <!-- Converter per visibilità da booleano (inverso) -->
+            <local:InverseBoolConverter x:Key="InverseBoolConverter" />
+            
+            <!-- Converter per peso font -->
+            <local:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
