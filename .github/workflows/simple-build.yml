@@ -16,11 +16,11 @@ jobs:
     
     - name: List files
       run: |
-        echo "Repository contents:"
-        ls -la
-        echo ""
-        echo "WinUIMvvmApp contents:"
-        ls -la WinUIMvvmApp/
+        Write-Output "Repository contents:"
+        Get-ChildItem -Force
+        Write-Output ""
+        Write-Output "WinUIMvvmApp contents:"
+        Get-ChildItem -Force WinUIMvvmApp/
         
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
