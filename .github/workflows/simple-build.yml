@@ -14,6 +14,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    - name: List files
+      run: |
+        echo "Repository contents:"
+        ls -la
+        echo ""
+        echo "WinUIMvvmApp contents:"
+        ls -la WinUIMvvmApp/
+        
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
