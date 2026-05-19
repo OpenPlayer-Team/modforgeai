@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>WinUIMvvmApp</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x86;x64;arm64</Platforms>
+    <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Abilita targeting Windows anche su Linux per compilazione -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <!-- Disabilita WinUI su Linux per permettere la compilazione -->
+    <UseWinUI Condition="'$(OS)' != 'Windows_NT'">false</UseWinUI>
+    <!-- Usa runtime portable su Linux -->
+    <RuntimeIdentifier Condition="'$(OS)' != 'Windows_NT'">linux-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231115000" Condition="'$(OS)' == 'Windows_NT'" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" Condition="'$(OS)' == 'Windows_NT'" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetPlatformVersion)' == '' AND '$(OS)' == 'Windows_NT'">
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231115000" />
+  </ItemGroup>
+
+</Project>
