@@ -13,29 +13,21 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup .NET
+    - name: Setup .NET SDK
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
 
-    - name: Install Windows App SDK
-      uses: microsoft/setup-windows-app-sdk@v1
-      with:
-        version: 1.4.231115000
-
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
-
     - name: Restore dependencies
       run: dotnet restore WinUIMvvmApp/WinUIMvvmApp.csproj
 
-    - name: Build
+    - name: Build for Windows
       run: dotnet build WinUIMvvmApp/WinUIMvvmApp.csproj -c Release -r win-x64 --no-restore
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: WindowsBuild
+        name: WindowsExecutable
         path: |
           WinUIMvvmApp/bin/Release/net8.0-windows10.0.19041.0/win-x64/*
         retention-days: 7
