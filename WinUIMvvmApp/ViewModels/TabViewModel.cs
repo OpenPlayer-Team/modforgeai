@@ -16,16 +16,13 @@ namespace WinUIMvvmApp.ViewModels;
 /// </summary>
 public partial class TabViewModel : ObservableObject, INotifyPropertyChanged
 {
-    #region Fields
 
     private readonly FileSystemService _fileSystemService;
     private readonly SemaphoreSlim _navigationLock = new(1, 1);
     private readonly Stack<string> _backStack = new();
     private CancellationTokenSource? _currentEnumerationCts;
 
-    #endregion
 
-    #region Observable Properties
 
     /// <summary>
     /// Titolo della scheda (legato alla directory corrente)
@@ -93,34 +90,6 @@ public partial class TabViewModel : ObservableObject, INotifyPropertyChanged
     [ObservableProperty]
     private SplitPaneViewModel? _rightPane;
 
-    #endregion
-
-    #region Constructor
-
-    /// <summary>
-    /// Crea una nuova scheda con percorso iniziale opzionale
-    /// </summary>
-    /// <param name="initialPath">Percorso iniziale (default: C:\)</param>
-    public TabViewModel(string? initialPath = null)
-    {
-        _fileSystemService = new FileSystemService();
-        CurrentPath = initialPath ?? "C:\\";
-        Title = $"Scheda: {CurrentPath}";
-
-        // Avvia il caricamento iniziale in background
-        _ = LoadCurrentDirectoryAsync();
-    }
-
-    /// <summary>
-    /// Costruttore per design-time (Visual Studio/XAML designer)
-    /// </summary>
-    public TabViewModel() : this("C:\\")
-    {
-    }
-
-    #endregion
-
-    #region Relay Commands
 
     /// <summary>
     /// Comando per navigare in una directory
@@ -247,9 +216,7 @@ public partial class TabViewModel : ObservableObject, INotifyPropertyChanged
         await RightPane.SyncWithAsync(LeftPane);
     }
 
-    #endregion
 
-    #region Private Methods
 
     /// <summary>
     /// Naviga a un percorso specifico con gestione dello stack di navigazione
@@ -346,38 +313,28 @@ public partial class TabViewModel : ObservableObject, INotifyPropertyChanged
             IsLoading = false;
             _navigationLock.Release();
         }
-    }
+     }
+ 
+ 
+     /// <summary>
+     /// Pulisce le risorse quando la scheda viene chiusa
+     /// </summary>
+     public void Cleanup()
+     {
+         _currentEnumerationCts?.Cancel();
+         _currentEnumerationCts?.Dispose();
+         _navigationLock.Dispose();
+     }
 
-    #endregion
+ 
+ 
+     /// <summary>
+     /// Costruttore per design-time (Visual Studio/XAML designer)
+     /// </summary>
+     public TabViewModel() : this("C:\\")
+     {
+     }
 
-    #region Cleanup
-
-    /// <summary>
-    /// Pulisce le risorse quando la scheda viene chiusa
-    /// </summary>
-    public void Cleanup()
-    {
-        _currentEnumerationCts?.Cancel();
-        _currentEnumerationCts?.Dispose();
-        _navigationLock.Dispose();
-        LeftPane?.Cleanup();
-        RightPane?.Cleanup();
-    }
-
-    #endregion
-}
-
-
-    /// <summary>
-    /// Costruttore per design-time (Visual Studio/XAML designer)
-    /// </summary>
-    public TabViewModel() : this("C:\\")
-    {
-    }
-
-    #endregion
-
-    #region Relay Commands
 
     /// <summary>
     /// Comando per navigare in una directory
@@ -445,9 +402,7 @@ public partial class TabViewModel : ObservableObject, INotifyPropertyChanged
         await NavigateToPathAsync(path);
     }
 
-    #endregion
 
-    #region Private Methods
 
     /// <summary>
     /// Naviga a un percorso specifico con gestione dello stack di navigazione
@@ -547,9 +502,7 @@ public partial class TabViewModel : ObservableObject, INotifyPropertyChanged
         }
     }
 
-    #endregion
 
-    #region Cleanup
 
     /// <summary>
     /// Pulisce le risorse quando la scheda viene chiusa
@@ -561,5 +514,4 @@ public partial class TabViewModel : ObservableObject, INotifyPropertyChanged
         _navigationLock.Dispose();
     }
 
-    #endregion
 }

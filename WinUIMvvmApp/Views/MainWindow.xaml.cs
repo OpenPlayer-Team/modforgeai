@@ -68,7 +68,6 @@ public sealed partial class MainWindow : Window
         Application.Current.Exit();
     }
 
-    #region Cloud Menu Handlers
 
     /// <summary>
     /// Gestore click su provider cloud nel menu
@@ -223,27 +222,22 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        foreach (var provider in connected.Values)
-        {
-            System.Diagnostics.Debug.WriteLine($"Aggiornamento {provider.ProviderName}...");
-        }
+         foreach (var provider in connected.Values)
+         {
+             System.Diagnostics.Debug.WriteLine($"Aggiornamento {provider.ProviderName}...");
+         }
+     }
 
-        await ShowInfoDialogAsync("Cloud", "Aggiornamento completato");
-    }
+     /// <summary>
+     /// Gestore per il pulsante "+" (AddTabButton)
+     /// </summary>
+     protected override void OnNavigatedTo(NavigationEventArgs e)
+     {
+         base.OnNavigatedTo(e);
+         System.Diagnostics.Debug.WriteLine("MainWindow attiva");
+     }
+ 
 
-    /// <summary>
-    /// Disconnette tutti i provider cloud
-    /// </summary>
-    private void DisconnectCloud_Click(object sender, RoutedEventArgs e)
-    {
-        var factory = CloudServiceFactory.Instance;
-        factory.DisconnectAll();
-        System.Diagnostics.Debug.WriteLine("Tutti i provider cloud disconnessi");
-    }
-
-    #endregion
-
-    #region Plugin Menu Handlers
 
     /// <summary>
     /// Aggiorna il menu dei plugin
@@ -263,38 +257,38 @@ public sealed partial class MainWindow : Window
         // Raggruppa per plugin
         var grouped = commands.GroupBy(c => c.Owner?.Name ?? "Sconosciuto");
         
-        foreach (var group in grouped)
-        {
-            if (group.Key != "Sconosciuto" && group.Count() > 1)
-            {
-                // Crea sottomenu per plugin con più comandi
-                var subItem = new MenuFlyoutSubItem
-                {
-                    Text = group.Key,
-                    Icon = new SymbolIcon(Symbol.Puzzle)
-                };
+         foreach (var group in grouped)
+         {
+             if (group.Key != "Sconosciuto" && group.Count() > 1)
+             {
+                 // Crea sottomenu per plugin con più comandi
+                 var subItem = new MenuFlyoutSubItem
+                 {
+                     Text = group.Key,
+                     Icon = new SymbolIcon(Symbol.Puzzle)
+                 };
 
-                foreach (var cmd in group)
-                {
-                    subItem.Items.Add(CreatePluginMenuItem(cmd));
-                }
+                 foreach (var cmd in group)
+                 {
+                     subItem.Items.Add(CreatePluginMenuItem(cmd));
+                 }
 
-                PluginsSubMenu.Items.Add(subItem);
-            }
-            else
-            {
-                // Comando singolo
-                foreach (var cmd in group)
-                {
-                    PluginsSubMenu.Items.Add(CreatePluginMenuItem(cmd));
-                }
-            }
-        }
-    }
+                 PluginsSubMenu.Items.Add(subItem);
+             }
+             else
+             {
+                 // Comando singolo
+                 foreach (var cmd in group)
+                 {
+                     PluginsSubMenu.Items.Add(CreatePluginMenuItem(cmd));
+                 }
+             }
+         }
+     }
 
-    /// <summary>
-    /// Crea un elemento di menu per un comando plugin
-    /// </summary>
+     /// <summary>
+     /// Crea un elemento di menu per un comando plugin
+     /// </summary>
     private MenuFlyoutItem CreatePluginMenuItem(PluginCommand cmd)
     {
         var item = new MenuFlyoutItem
@@ -390,9 +384,7 @@ public sealed partial class MainWindow : Window
         await ShowInfoDialogAsync("Plugin", message);
     }
 
-    #endregion
 
-    #region Dialog Helpers
 
     /// <summary>
     /// Mostra dialog di errore
@@ -439,25 +431,13 @@ public sealed partial class MainWindow : Window
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Errore mostrare dialog: {ex}");
-        }
-    }
-
-    #endregion
-
-    /// <summary>
-    /// Navigazione alla finestra principale
-    /// </summary>
-    protected override void OnNavigatedTo(NavigationEventArgs e)
-    {
-        base.OnNavigatedTo(e);
-        System.Diagnostics.Debug.WriteLine("MainWindow attiva");
-    }
-}
+         }
+     }
 
 
-    /// <summary>
-    /// Gestore per il pulsante "+" (AddTabButton)
-    /// </summary>
+     /// <summary>
+     /// Gestore per il pulsante "+" (AddTabButton)
+     /// </summary>
     private void MainTabView_AddTabButtonClick(Controls.TabView sender, Controls.TabViewTabButtonClickEventArgs args)
     {
         ViewModel.AddNewTabCommand.Execute("C:\\");
@@ -485,7 +465,6 @@ public sealed partial class MainWindow : Window
         Application.Current.Exit();
     }
 
-    #region Cloud Menu Handlers
 
     /// <summary>
     /// Gestore click su provider cloud nel menu
@@ -656,55 +635,4 @@ public sealed partial class MainWindow : Window
         System.Diagnostics.Debug.WriteLine("Tutti i provider cloud disconnessi");
     }
 
-    #endregion
-
-    /// <summary>
-    /// Navigazione alla finestra principale
-    /// </summary>
-    protected override void OnNavigatedTo(NavigationEventArgs e)
-    {
-        base.OnNavigatedTo(e);
-        System.Diagnostics.Debug.WriteLine("MainWindow attiva");
-    }
-}
-
-
-    /// <summary>
-    /// Gestore per il pulsante "+" (AddTabButton)
-    /// </summary>
-    private void MainTabView_AddTabButtonClick(Controls.TabView sender, Controls.TabViewTabButtonClickEventArgs args)
-    {
-        ViewModel.AddNewTabCommand.Execute("C:\\");
-        System.Diagnostics.Debug.WriteLine("Nuova scheda richiesta");
-    }
-
-    /// <summary>
-    /// Gestore per la richiesta di chiusura scheda
-    /// </summary>
-    private void MainTabView_TabCloseRequested(Controls.TabView sender, Controls.TabViewTabCloseRequestedEventArgs args)
-    {
-        if (args.Item is ViewModels.TabViewModel tab)
-        {
-            ViewModel.CloseTabCommand.Execute(tab);
-            System.Diagnostics.Debug.WriteLine($"Chiusura scheda richiesta: {tab.Title}");
-        }
-    }
-
-    /// <summary>
-    /// Gestore menu Esci
-    /// </summary>
-    private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
-    {
-        System.Diagnostics.Debug.WriteLine("Uscita applicazione");
-        Application.Current.Exit();
-    }
-
-    /// <summary>
-    /// Navigazione alla finestra principale
-    /// </summary>
-    protected override void OnNavigatedTo(NavigationEventArgs e)
-    {
-        base.OnNavigatedTo(e);
-        System.Diagnostics.Debug.WriteLine("MainWindow attiva");
-    }
 }

@@ -10,7 +10,6 @@ obj/
 
 # MSBuild
 *.sln
-*.csproj
 *.userprefs
 
 # Output
