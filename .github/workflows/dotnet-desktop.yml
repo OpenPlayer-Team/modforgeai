@@ -71,6 +71,12 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
+    # Install Windows App SDK for WinUI 3
+    - name: Install Windows App SDK
+      uses: microsoft/setup-windows-app-sdk@v1
+      with:
+        version: 1.4.0
+
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v2
